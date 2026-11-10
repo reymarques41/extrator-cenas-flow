@@ -73,9 +73,10 @@ def extrair_cenas(video_path, pasta_saida, threshold, intervalo_segundos):
     cap = cv2.VideoCapture(video_path)
     fps = cap.get(cv2.CAP_PROP_FPS) or 25
     resultado = []
-
     if len(scenes) < 3:
         # fallback: intervalos fixos, cada "cena" dura intervalo_segundos
         idx, contador = 0, 1
         passo = max(1, int(fps * intervalo_segundos))
-        duracao_total = cap.get(cv2.CAP_PROP_FRAME_COUNT) / fps if
+        duracao_total = cap.get(cv2.CAP_PROP_FRAME_COUNT) / fps if fps else 0
+
+   
