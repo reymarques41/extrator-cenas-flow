@@ -1,6 +1,1 @@
-streamlit
-opencv-python-headless
-scenedetect[opencv]
-numpy
-openai-whisper
-torch
+
