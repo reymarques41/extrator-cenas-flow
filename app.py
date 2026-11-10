@@ -26,8 +26,13 @@ st.write(
 )
 
 threshold = st.slider(
-    "Sensibilidade (menor = detecta mais mudanças)",
-    min_value=1.0, max_value=30.0, value=4.0, step=1.0
+    "Sensibilidade (maior = detecta só mudanças fortes de cena)",
+    min_value=10.0, max_value=60.0, value=27.0, step=1.0
+)
+
+duracao_minima_cena = st.slider(
+    "Duração mínima de uma cena (segundos) — ignora mudanças rápidas (ex: fala, gestos)",
+    min_value=1.0, max_value=15.0, value=3.0, step=0.5
 )
 
 intervalo_segundos = st.slider(
@@ -40,12 +45,16 @@ arquivo_video = st.file_uploader(
 )
 
 
-def extrair_cenas(video_path, pasta_saida, threshold, intervalo_segundos):
+def extrair_cenas(video_path, pasta_saida, threshold, intervalo_segundos, duracao_minima_cena=3.0):
     """Retorna lista de dicts: {caminho_imagem, inicio_seg, fim_seg}."""
     os.makedirs(pasta_saida, exist_ok=True)
     video = open_video(video_path)
+    fps_video = video.frame_rate or 25
+    min_scene_len_frames = max(1, int(duracao_minima_cena * fps_video))
     scene_manager = SceneManager()
-    scene_manager.add_detector(ContentDetector(threshold=threshold))
+    scene_manager.add_detector(
+        ContentDetector(threshold=threshold, min_scene_len=min_scene_len_frames)
+    )
     scene_manager.detect_scenes(video)
     scenes = scene_manager.get_scene_list()
 
@@ -119,4 +128,3 @@ if arquivo_video is not None:
                             file_name="cenas.zip",
                             mime="application/zip",
                         )
-
